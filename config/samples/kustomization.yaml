@@ -1,0 +1,4 @@
+## Append samples of your project ##
+resources:
+- microseg_v1_microsegnetworkpolicy.yaml
+#+kubebuilder:scaffold:manifestskustomizesamples

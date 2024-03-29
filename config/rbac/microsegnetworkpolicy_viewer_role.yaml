@@ -1,0 +1,27 @@
+# permissions for end users to view microsegnetworkpolicies.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: microsegnetworkpolicy-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: microseg-operator
+    app.kubernetes.io/part-of: microseg-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: microsegnetworkpolicy-viewer-role
+rules:
+- apiGroups:
+  - microseg.xinyan.cn
+  resources:
+  - microsegnetworkpolicies
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - microseg.xinyan.cn
+  resources:
+  - microsegnetworkpolicies/status
+  verbs:
+  - get
