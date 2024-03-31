@@ -19,6 +19,8 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"github.com/sirupsen/logrus"
+	"github.com/yanxinfire/microseg-operator/configs"
 	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
@@ -52,6 +54,11 @@ func init() {
 }
 
 func main() {
+	restconfig, err := configs.InitConfig()
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
@@ -94,7 +101,7 @@ func main() {
 		TLSOpts: tlsOpts,
 	})
 
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+	mgr, err := ctrl.NewManager(restconfig, ctrl.Options{
 		Scheme: scheme,
 		Metrics: metricsserver.Options{
 			BindAddress:   metricsAddr,
@@ -122,10 +129,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controller.MicrosegNetworkPolicyReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
+	mnpReconciler := controller.NewMicrosegNetworkPolicyReconciler(
+		mgr.GetClient(),
+		mgr.GetScheme(),
+		controller.WithEngine(configs.PolicyEngine),
+	)
+
+	if err = mnpReconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "MicrosegNetworkPolicy")
 		os.Exit(1)
 	}

@@ -1,0 +1,133 @@
+{{- if .Values.rbac.create -}}
+kind: ClusterRole
+apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
+metadata:
+  name: {{ include "common.names.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - microseg.security.cn
+    resources:
+      - microsegnetworkpolicies
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - microseg.security.cn
+    resources:
+      - microsegnetworkpolicies/status
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - nodes
+      - namespaces
+      - endpoints
+      - services
+    verbs:
+      - list
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - batch
+    resources:
+      - cronjobs
+      - jobs
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - extensions
+      - apps
+    resources:
+      - daemonsets
+      - deployments
+      - networkpolicies
+      - replicasets
+      - statefulsets
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - crd.projectcalico.org
+    resources:
+      - globalnetworkpolicies
+      - networkpolicies
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - networkpolicies
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - extensions
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - defense.security.cn
+    resources:
+      - honeypots
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - defense.security.cn
+    resources:
+      - honeypots/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - defense.security.cn
+    resources:
+      - honeypots/status
+    verbs:
+      - get
+      - patch
+      - update
+{{- end -}}
+                         

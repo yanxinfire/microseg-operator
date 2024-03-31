@@ -1,0 +1,46 @@
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "common.labels.matchLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "common.names.fullname" . }}
+      containers:
+      - name: security-operator
+        env:
+        {{- if eq .Values.policyEngine "calico" }}
+        - name: MICROSEG_DATASTORE_TYPE
+          value: {{ .Values.calico.datastoreType }}
+           {{- if .Values.calico.etcdEnable }}
+        - name: MICROSEG_ETCD_ENDPOINTS
+          value: {{ .Values.calico.etcdEndpoints }}
+           {{- end }}
+        {{- else if eq .Values.policyEngine "kubernetes" }}
+        {{- else }}
+        {{- end }}
+        - name: MICROSEG_POLICY_ENGINE_TYPE
+          value: {{ .Values.policyEngine }}
+        image: {{ include "security.operator.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+{{ toYaml .Values.resources | trim | indent 10 }}
+        {{- if .Values.calico.etcdEnable }}
+        volumeMounts:
+        - name: etcd-config
+          mountPath: /app/etcd
+        {{- end }}
+      imagePullSecrets:
+      - name: {{ .Values.image.pullSecret }}
+      {{- if .Values.calico.etcdEnable }}
+      volumes:
+      - name: etcd-config
+        secret:
+          secretName: calico-etcd
+      {{- end }}

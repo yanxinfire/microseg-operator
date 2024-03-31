@@ -1,0 +1,42 @@
+global:
+  prefixName: csec
+
+image:
+  registry: localhost:32000
+  repository: library
+  name: security-operator
+  tag: latest
+  pullPolicy: Always
+  pullSecret: harbor-admin-secret
+
+nameOverride: "security-operator"
+fullnameOverride: "security-operator"
+
+service:
+  type: ClusterIP
+  port: 9443
+  targetPort: 9443
+  # Specify the nodePort value for the NodePort service types.
+#  nodePort: 30090
+
+rbac:
+  # Create and use rbac resources
+  create: true
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 200Mi
+
+calico:
+  etcdEnable: false
+  #  etcdv3,kubernetes
+  datastoreType: "kubernetes"
+  # example: dce-etcd.kube-system.svc.cluster.local:12379
+  etcdEndpoints: ""
+
+# calico,kubernetes
+policyEngine: "calico"

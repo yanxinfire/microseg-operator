@@ -1,0 +1,18 @@
+global:
+  prefixName: csec
+
+
+image:
+  registry: harbor.local.example.com
+  repository: library
+  tag: latest
+
+calico:
+  etcdEnable: false
+#  etcdv3,kubernetes
+  datastoreType: "kubernetes"
+# example: dce-etcd.kube-system.svc.cluster.local:12379
+  etcdEndpoints: ""
+
+# calico,kubernetes
+policyEngine: "calico"
